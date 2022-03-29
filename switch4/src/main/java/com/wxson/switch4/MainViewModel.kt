@@ -1,13 +1,28 @@
 package com.wxson.switch4
 
+import android.hardware.usb.UsbManager
 import android.os.Handler
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
+import cn.wch.ch34xuartdriver.CH34xUARTDriver
 import com.wxson.commlib.Ch34x
 import com.wxson.commlib.Ch34xAction
 
 
 class MainViewModel : ViewModel() {
     private val ch34x = Ch34x()
+
+    fun usbPermissionCheck() : Boolean {
+        ch34x.myApp.driver = CH34xUARTDriver(
+            MyApplication.context.getSystemService(AppCompatActivity.USB_SERVICE)  as UsbManager,
+            MyApplication.context,
+            "cn.wch.wchusbdriver.USB_PERMISSION")
+        return ch34x.myApp.driver.UsbFeatureSupported()
+    }
+
+    fun setCh34x() {
+        Ch34xAction.setCh34x(ch34x)
+    }
 
     fun setHandler(handler: Handler) {
         Ch34xAction.setHandler(handler)
@@ -41,23 +56,23 @@ class MainViewModel : ViewModel() {
     }
 
     fun open() : String {
-        return Ch34xAction.open(ch34x)
+        return Ch34xAction.open()
     }
 
     fun close() : String {
-        return Ch34xAction.close(ch34x)
+        return Ch34xAction.close()
     }
 
     fun config() : String {
-        return Ch34xAction.config(ch34x)
+        return Ch34xAction.config()
     }
 
     fun requestState() : String {
-        return Ch34xAction.write(ch34x, "FF")
+        return Ch34xAction.write( "FF")
     }
 
     private fun write(outputString: String) : String {
-        return Ch34xAction.write(ch34x, outputString)
+        return Ch34xAction.write(outputString)
     }
 
 }

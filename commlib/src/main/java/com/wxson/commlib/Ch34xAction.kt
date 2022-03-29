@@ -6,15 +6,17 @@ import kotlin.concurrent.thread
 
 object Ch34xAction {
     private lateinit var handler: Handler
-    private var ch34x: Ch34x? = null
+    private lateinit var ch34x: Ch34x
 
+    fun setCh34x(ch34: Ch34x) {
+        ch34x = ch34
+    }
     fun setHandler(handler: Handler) {
         this.handler = handler
     }
 
-    fun open(ch34: Ch34x): String {
-        ch34x = ch34
-        return with(ch34) {
+    fun open(): String {
+        return with(ch34x) {
             if (!isOpen) {
                 if (myApp.driver.ResumeUsbPermission() == 0) {
                     //Resume usb device list
@@ -52,8 +54,8 @@ object Ch34xAction {
         }
     }
 
-    fun close(ch34: Ch34x): String {
-        return with(ch34) {
+    fun close(): String {
+        return with(ch34x) {
             if (isOpen) {
                 isOpen = false
                 try {
@@ -70,8 +72,8 @@ object Ch34xAction {
         }
     }
 
-    fun config(ch34: Ch34x): String {
-        return with(ch34) {
+    fun config(): String {
+        return with(ch34x) {
             if (myApp.driver.SetConfig(baudRate, dataBit, stopBit, parity, flowControl)) {
                 "Config successfully"
             } else {
@@ -80,8 +82,8 @@ object Ch34xAction {
         }
     }
 
-    fun write(ch34: Ch34x, outputString: String): String {
-        return with(ch34.myApp.driver) {
+    fun write(outputString: String): String {
+        return with(ch34x.myApp.driver) {
             val toSend: ByteArray = toByteArray(outputString)
             if (WriteData(toSend, toSend.size) < 0) {
                 "Write failed!"
@@ -92,7 +94,7 @@ object Ch34xAction {
     }
 
     private val readThread = thread(false){
-        ch34x?.let {
+        ch34x.let {
             val buffer = ByteArray(4096)
             while (true) {
                 val msg = Message.obtain()
