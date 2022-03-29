@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Switch4</string>
+    <string name="open">OPEN</string>
+    <string name="close">CLOSE</string>
+    <string name="config">CONFIG</string>
+    <string name="state">STATE</string>
+    <string name="clear">CLEAR</string>
+</resources>
