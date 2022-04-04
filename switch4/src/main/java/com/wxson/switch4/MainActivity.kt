@@ -42,6 +42,10 @@ class MainActivity : AppCompatActivity() {
                     binding.switch2.isChecked = stateMsg[16] == 'N'
                     binding.switch3.isChecked = stateMsg[26] == 'N'
                     binding.switch4.isChecked = stateMsg[36] == 'N'
+                    binding.toggleBtn1.isChecked = stateMsg[6] == 'N'
+                    binding.toggleBtn2.isChecked = stateMsg[16] == 'N'
+                    binding.toggleBtn3.isChecked = stateMsg[26] == 'N'
+                    binding.toggleBtn4.isChecked = stateMsg[36] == 'N'
                     stateMsg = ""
                 }
             }
@@ -56,11 +60,6 @@ class MainActivity : AppCompatActivity() {
                     binding.toggleBtnOpen.isChecked = false
                 } else {
                     binding.btnConfig.isEnabled = true
-                    binding.btnGetState.isEnabled = true
-                    binding.toggleBtn1.isEnabled = true
-                    binding.toggleBtn2.isEnabled = true
-                    binding.toggleBtn3.isEnabled = true
-                    binding.toggleBtn4.isEnabled = true
                 }
             } else {
                 returnMsg = viewModel.close()
@@ -80,6 +79,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnConfig.setOnClickListener {
+            val returnMsg = viewModel.config()
+            if (returnMsg == "Config successfully") {
+                binding.btnGetState.isEnabled = true
+                binding.toggleBtn1.isEnabled = true
+                binding.toggleBtn2.isEnabled = true
+                binding.toggleBtn3.isEnabled = true
+                binding.toggleBtn4.isEnabled = true
+                Thread.sleep(200)
+                viewModel.requestState()
+            }
             showMsg(viewModel.config())
         }
 
@@ -100,6 +109,8 @@ class MainActivity : AppCompatActivity() {
     private fun setOnCheckedChangeListener(toggleButton: ToggleButton, ToggleButtonId: Int) {
         toggleButton.setOnCheckedChangeListener { _, isChecked ->
             showMsg(viewModel.setSwitch(ToggleButtonId, isChecked))
+            Thread.sleep(200)
+            viewModel.requestState()
         }
     }
 
