@@ -98,6 +98,10 @@ object Ch34xAction {
         }
     }
 
+    fun isConnected(): Boolean {
+        return ch34x.myApp.driver.isConnected
+    }
+
     private fun startReadThread() {
         thread {
             val buffer = ByteArray(4096)
@@ -139,7 +143,6 @@ object Ch34xAction {
     /**
      * 将ByteArray转化为十六进制String
      * @param bytes     需要转换的byte[]数组
-     * @param length  需要转换的数组长度
      * @return 转换后的String
      */
     private fun toHexString(bytes: ByteArray?): String {
