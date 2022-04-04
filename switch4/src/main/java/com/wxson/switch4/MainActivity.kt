@@ -13,8 +13,9 @@ import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var viewModel: MainViewModel
-    lateinit var handler: Handler
+    private lateinit var viewModel: MainViewModel
+    private lateinit var handler: Handler
+    private var stateMsg = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +35,15 @@ class MainActivity : AppCompatActivity() {
 
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
-                binding.textView.append(msg.obj as String)
+                stateMsg += msg.obj as String
+                if (stateMsg.length >= 40) {    //状态信息是分段返回，全部返回后再行处理
+                    binding.textView.text = stateMsg
+                    binding.switch1.isChecked = stateMsg[6] == 'N'
+                    binding.switch2.isChecked = stateMsg[16] == 'N'
+                    binding.switch3.isChecked = stateMsg[26] == 'N'
+                    binding.switch4.isChecked = stateMsg[36] == 'N'
+                    stateMsg = ""
+                }
             }
         }
         viewModel.setHandler(handler)
@@ -45,14 +54,29 @@ class MainActivity : AppCompatActivity() {
                 returnMsg = viewModel.open()
                 if (returnMsg != "Device opened") {
                     binding.toggleBtnOpen.isChecked = false
+                } else {
+                    binding.btnConfig.isEnabled = true
+                    binding.btnGetState.isEnabled = true
+                    binding.toggleBtn1.isEnabled = true
+                    binding.toggleBtn2.isEnabled = true
+                    binding.toggleBtn3.isEnabled = true
+                    binding.toggleBtn4.isEnabled = true
                 }
             } else {
                 returnMsg = viewModel.close()
                 if (returnMsg != "Device closed") {
                     binding.toggleBtnOpen.isChecked = true
+                } else {
+                    binding.btnConfig.isEnabled = false
+                    binding.btnGetState.isEnabled = false
+                    binding.toggleBtn1.isEnabled = false
+                    binding.toggleBtn2.isEnabled = false
+                    binding.toggleBtn3.isEnabled = false
+                    binding.toggleBtn4.isEnabled = false
                 }
             }
             showMsg(returnMsg)
+//            binding.textView.text = returnMsg
         }
 
         binding.btnConfig.setOnClickListener {

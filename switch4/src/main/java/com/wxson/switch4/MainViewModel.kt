@@ -56,7 +56,13 @@ class MainViewModel : ViewModel() {
     }
 
     fun open() : String {
-        return Ch34xAction.open()
+        var returnValue = ""
+        try {
+            returnValue = Ch34xAction.open()
+        } catch (e: Exception) {
+            returnValue = e.stackTraceToString()
+        }
+        return returnValue
     }
 
     fun close() : String {

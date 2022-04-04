@@ -2,6 +2,9 @@ package com.wxson.commlib
 
 import android.os.Handler
 import android.os.Message
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlin.concurrent.thread
 
 object Ch34xAction {
@@ -34,7 +37,8 @@ object Ch34xAction {
                                 } else {
                                     isOpen = true
                                     //开启读线程读取串口接收的数据
-                                    readThread.start()
+//                                    startReadThread()
+                                    readDataCoroutine()
                                     "Device opened"
                                 }
                             } else {
@@ -58,12 +62,13 @@ object Ch34xAction {
         return with(ch34x) {
             if (isOpen) {
                 isOpen = false
-                try {
-                    Thread.sleep(200)
-                } catch (e: InterruptedException) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace()
-                }
+//                try {
+//                    Thread.sleep(200)
+//                } catch (e: InterruptedException) {
+//                    // TODO Auto-generated catch block
+//                    e.printStackTrace()
+//                }
+                job.cancel()
                 myApp.driver.CloseDevice()
                 "Device closed"
             } else {
@@ -93,17 +98,37 @@ object Ch34xAction {
         }
     }
 
-    private val readThread = thread(false){
-        ch34x.let {
+    private fun startReadThread() {
+        thread {
             val buffer = ByteArray(4096)
             while (true) {
                 val msg = Message.obtain()
-                val length: Int = it.myApp.driver.ReadData(buffer, 4096)
+                val length: Int = ch34x.myApp.driver.ReadData(buffer, 4096)
                 if (length > 0) {
-                    val inputStr: String = toHexString(buffer) //以16进制字符串输出
-                    //					String recv = new String(buffer, 0, length);		//以字符串形式输出
+//                    val inputStr = String(buffer, 0, length)    //以字符串形式输出
+                    val inputStr = toHexString(buffer)
                     msg.obj = inputStr
-                    if (this::handler.isInitialized){
+                    if (::handler.isInitialized){
+                        handler.sendMessage(msg)
+                    }
+                }
+            }
+        }
+    }
+
+    private val job = Job()
+    private val scope = CoroutineScope(job)
+    private fun readDataCoroutine() {
+        scope.launch {
+            val buffer = ByteArray(4096)
+            while (true) {
+                val msg = Message.obtain()
+                val length: Int = ch34x.myApp.driver.ReadData(buffer, 4096)
+                if (length > 0) {
+                    val inputStr = String(buffer, 0, length)    //以字符串形式输出
+//                    val inputStr = toHexString(buffer)
+                    msg.obj = inputStr
+                    if (::handler.isInitialized){
                         handler.sendMessage(msg)
                     }
                 }

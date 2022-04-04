@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">Switch4</string>
-    <string name="open">OPEN</string>
-    <string name="close">CLOSE</string>
-    <string name="config">CONFIG</string>
-    <string name="state">STATE</string>
-    <string name="clear">CLEAR</string>
+    <string name="open">打开接口</string>
+    <string name="close">关闭接口</string>
+    <string name="config">配置接口</string>
+    <string name="state">获取状态</string>
+    <string name="clear">清除信息</string>
+    <string name="start">启动</string>
+    <string name="stop">停止</string>
 </resources>
