@@ -11,13 +11,28 @@ object Ch34xAction {
     private lateinit var handler: Handler
     private lateinit var ch34x: Ch34x
 
+    /**
+     * 注入Ch34x
+     * @param ch34 Ch34x的实例
+     * @return Unit
+     */
     fun setCh34x(ch34: Ch34x) {
         ch34x = ch34
     }
+
+    /**
+     * 注入Handler
+     *  @param handler Handler的实例
+     *  @return Unit
+     */
     fun setHandler(handler: Handler) {
         this.handler = handler
     }
 
+    /**
+     * 打开设备
+     * @return 执行结果String
+     */
     fun open(): String {
         return with(ch34x) {
             if (!isOpen) {
@@ -58,6 +73,10 @@ object Ch34xAction {
         }
     }
 
+    /**
+     * 关闭设备
+     * @return 执行结果String
+     */
     fun close(): String {
         return with(ch34x) {
             if (isOpen) {
@@ -77,6 +96,10 @@ object Ch34xAction {
         }
     }
 
+    /**
+     * 配置设备参数
+     * @return 执行结果String
+     */
     fun config(): String {
         return with(ch34x) {
             if (myApp.driver.SetConfig(baudRate, dataBit, stopBit, parity, flowControl)) {
@@ -87,6 +110,11 @@ object Ch34xAction {
         }
     }
 
+    /**
+     * 数据写入设备
+     * @param outputString 十六进制字符形式的数据
+     * @return 执行结果String
+     */
     fun write(outputString: String): String {
         return with(ch34x.myApp.driver) {
             val toSend: ByteArray = toByteArray(outputString)
@@ -98,10 +126,17 @@ object Ch34xAction {
         }
     }
 
+    /**
+     * 判断设备是否连接
+     * @return 连接状态
+     */
     fun isConnected(): Boolean {
         return ch34x.myApp.driver.isConnected
     }
 
+    /**
+     * 启动读数据线程
+     */
     private fun startReadThread() {
         thread {
             val buffer = ByteArray(4096)
@@ -120,8 +155,12 @@ object Ch34xAction {
         }
     }
 
-    private val job = Job()
-    private val scope = CoroutineScope(job)
+    private val job = Job()     // background job for coroutine
+    private val scope = CoroutineScope(job) // coroutine scope
+
+    /**
+     * 启动读数据协程
+     */
     private fun readDataCoroutine() {
         scope.launch {
             val buffer = ByteArray(4096)
@@ -153,10 +192,6 @@ object Ch34xAction {
                 hexString = Integer.toHexString((if(bt < 0) bt + 256 else bt).toInt())
                 result += if (hexString.length == 1)  "0$hexString" else "$hexString "
             }
-//            it.forEach { it1 ->
-//                hexString = Integer.toHexString((if(it1 < 0) it1 + 256 else it1).toInt())
-//                result += if (hexString.length == 1)  "0$hexString" else "$hexString "
-//            }
         }
         return result
     }

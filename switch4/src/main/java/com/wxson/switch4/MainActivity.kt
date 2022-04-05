@@ -21,18 +21,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        //获取ViewModel实例
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-
+        //USB权限检查
         if (viewModel.usbPermissionCheck()) {
             showMsg("完美支持USB HOST")
         } else {
             showMsg("你的手机不支持USB HOST，请换手机")
             exitProcess(0)
         }
-
-        viewModel.setCh34x()
-
+        //设备返回信息处理Handler定义
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 stateMsg += msg.obj as String
@@ -50,8 +48,9 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+        //注入Handler
         viewModel.setHandler(handler)
-
+        //toggleBtnOpen Listener
         binding.toggleBtnOpen.setOnCheckedChangeListener { _, isChecked ->
             val returnMsg: String
             if (isChecked) {
@@ -77,7 +76,7 @@ class MainActivity : AppCompatActivity() {
             showMsg(returnMsg)
 //            binding.textView.text = returnMsg
         }
-
+        //btnConfig Listener
         binding.btnConfig.setOnClickListener {
             val returnMsg = viewModel.config()
             if (returnMsg == "Config successfully") {
@@ -91,21 +90,21 @@ class MainActivity : AppCompatActivity() {
             }
             showMsg(viewModel.config())
         }
-
+        //btnGetState Listener
         binding.btnGetState.setOnClickListener {
             showMsg(viewModel.requestState())
         }
-
+        //btnClear Listener
         binding.btnClear.setOnClickListener {
             binding.textView.text = ""
         }
-
+        //set toggleBtn1..4 Listener
         setOnCheckedChangeListener(binding.toggleBtn1, 1)
         setOnCheckedChangeListener(binding.toggleBtn2, 2)
         setOnCheckedChangeListener(binding.toggleBtn3, 3)
         setOnCheckedChangeListener(binding.toggleBtn4, 4)
     }
-
+    //toggleBtn1..4 Listener
     private fun setOnCheckedChangeListener(toggleButton: ToggleButton, ToggleButtonId: Int) {
         toggleButton.setOnCheckedChangeListener { _, isChecked ->
             showMsg(viewModel.setSwitch(ToggleButtonId, isChecked))
