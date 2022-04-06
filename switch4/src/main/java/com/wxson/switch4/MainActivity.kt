@@ -108,7 +108,7 @@ class MainActivity : AppCompatActivity() {
     private fun setOnCheckedChangeListener(toggleButton: ToggleButton, ToggleButtonId: Int) {
         toggleButton.setOnCheckedChangeListener { _, isChecked ->
             showMsg(viewModel.setSwitch(ToggleButtonId, isChecked))
-            Thread.sleep(200)
+            Thread.sleep(200)   //给外部设备一些处理时间
             viewModel.requestState()
         }
     }
